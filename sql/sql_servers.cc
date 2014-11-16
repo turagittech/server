@@ -1077,6 +1077,7 @@ static FOREIGN_SERVER *
 prepare_server_struct_for_insert(LEX_SERVER_OPTIONS *server_options)
 {
   FOREIGN_SERVER *server;
+  ulong default_port= 0;
   DBUG_ENTER("prepare_server_struct");
 
   if (!(server= (FOREIGN_SERVER *)alloc_root(&mem, sizeof(FOREIGN_SERVER))))
@@ -1094,6 +1095,18 @@ prepare_server_struct_for_insert(LEX_SERVER_OPTIONS *server_options)
   SET_SERVER_OR_RETURN(server_name, NULL);
   SET_SERVER_OR_RETURN(scheme, NULL);
 
+  /* scheme-specific checks */
+  if (!strcasecmp(server->scheme, "mysql"))
+  {
+    default_port= MYSQL_PORT;
+    if (!server_options->host.str && !server_options->socket.str)
+    {
+      my_error(ER_CANT_CREATE_FEDERATED_TABLE, MYF(0),
+               "either HOST or SOCKET must be set");
+      DBUG_RETURN(NULL);
+    }
+  }
+
   SET_SERVER_OR_RETURN(host, "");
   SET_SERVER_OR_RETURN(db, "");
   SET_SERVER_OR_RETURN(username, "");
@@ -1103,9 +1116,9 @@ prepare_server_struct_for_insert(LEX_SERVER_OPTIONS *server_options)
 
   server->server_name_length= server_options->server_name.length;
 
-  /* set to 0 if not specified */
+  /* set to default_port if not specified */
   server->port= server_options->port > -1 ?
-    server_options->port : 0;
+    server_options->port : default_port;
 
   DBUG_RETURN(server);
 }
