@@ -5487,8 +5487,8 @@ create_sp_error:
     if ((error= create_server(thd, &lex->server_options)))
     {
       DBUG_PRINT("info", ("problem creating server <%s>",
-                          lex->server_options.server_name));
-      my_error(error, MYF(0), lex->server_options.server_name);
+                          lex->server_options.server_name.str));
+      my_error(error, MYF(0), lex->server_options.server_name.str);
       break;
     }
     my_ok(thd, 1);
@@ -5506,8 +5506,8 @@ create_sp_error:
     if ((error= alter_server(thd, &lex->server_options)))
     {
       DBUG_PRINT("info", ("problem altering server <%s>",
-                          lex->server_options.server_name));
-      my_error(error, MYF(0), lex->server_options.server_name);
+                          lex->server_options.server_name.str));
+      my_error(error, MYF(0), lex->server_options.server_name.str);
       break;
     }
     my_ok(thd, 1);
@@ -5527,8 +5527,8 @@ create_sp_error:
       if (! lex->check_exists && err_code == ER_FOREIGN_SERVER_DOESNT_EXIST)
       {
         DBUG_PRINT("info", ("problem dropping server %s",
-                            lex->server_options.server_name));
-        my_error(err_code, MYF(0), lex->server_options.server_name);
+                            lex->server_options.server_name.str));
+        my_error(err_code, MYF(0), lex->server_options.server_name.str);
       }
       else
       {
