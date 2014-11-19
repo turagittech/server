@@ -429,7 +429,7 @@ int Explain_table_access::print_explain(select_result_sink *output, uint8 explai
                                         uint select_id, const char *select_type,
                                         bool using_temporary, bool using_filesort)
 {
-  const CHARSET_INFO *cs= system_charset_info;
+  CHARSET_INFO *cs= system_charset_info;
   const char *hash_key_prefix= "#hash#";
   bool is_hj= (type == JT_HASH || type == JT_HASH_NEXT || 
                type == JT_HASH_RANGE || type == JT_HASH_INDEX_MERGE);
