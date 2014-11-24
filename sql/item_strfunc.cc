@@ -2172,7 +2172,6 @@ String *Item_func_password::val_str_ascii(String *str)
 {
   DBUG_ASSERT(fixed == 1);
   String *res= args[0]->val_str(str); 
-  check_password_policy(res);
   if (args[0]->null_value || res->length() == 0)
     return make_empty_result();
   my_make_scrambled_password(tmp_value, res->ptr(), res->length());
@@ -2184,12 +2183,8 @@ char *Item_func_password::alloc(THD *thd, const char *password, size_t pass_len)
 {
   char *buff= (char *) thd->alloc(SCRAMBLED_PASSWORD_CHAR_LENGTH+1);
   if (buff)
-  {
-    String *password_str= new (thd->mem_root)String(password, thd->variables.
-                                                    character_set_client);
-    check_password_policy(password_str);
     my_make_scrambled_password(buff, password, pass_len);
-  }
+
   return buff;
 }
 
