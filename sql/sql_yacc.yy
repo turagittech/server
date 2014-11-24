@@ -1325,7 +1325,7 @@ bool my_yyoverflow(short **a, YYSTYPE **b, ulong *yystacksize);
 %token  NUMERIC_SYM                   /* SQL-2003-R */
 %token  NVARCHAR_SYM
 %token  OFFSET_SYM
-%token  OLD_PASSWORD
+%token  OLD_PASSWORD_SYM
 %token  ON                            /* SQL-2003-R */
 %token  ONE_SYM
 %token  ONLY_SYM                      /* SQL-2003-R */
@@ -1353,7 +1353,7 @@ bool my_yyoverflow(short **a, YYSTYPE **b, ulong *yystacksize);
 %token  PARTITION_SYM                 /* SQL-2003-R */
 %token  PARTITIONS_SYM
 %token  PARTITIONING_SYM
-%token  PASSWORD
+%token  PASSWORD_SYM
 %token  PERSISTENT_SYM
 %token  PHASE_SYM
 %token  PLUGINS_SYM
@@ -2487,7 +2487,7 @@ server_option:
           {
             Lex->server_options.owner= $2.str;
           }
-        | PASSWORD TEXT_STRING_sys
+        | PASSWORD_SYM TEXT_STRING_sys
           {
             Lex->server_options.password= $2.str;
           }
@@ -5573,7 +5573,7 @@ create_table_option:
             Lex->create_info.avg_row_length=$3;
             Lex->create_info.used_fields|= HA_CREATE_USED_AVG_ROW_LENGTH;
           }
-        | PASSWORD opt_equal TEXT_STRING_sys
+        | PASSWORD_SYM opt_equal TEXT_STRING_sys
           {
             Lex->create_info.password=$3.str;
             Lex->create_info.used_fields|= HA_CREATE_USED_PASSWORD;
@@ -9754,13 +9754,13 @@ function_call_conflict:
             if ($$ == NULL)
               MYSQL_YYABORT;
           }
-        | OLD_PASSWORD '(' expr ')'
+        | OLD_PASSWORD_SYM '(' expr ')'
           {
             $$=  new (thd->mem_root) Item_func_old_password($3);
             if ($$ == NULL)
               MYSQL_YYABORT;
           }
-        | PASSWORD '(' expr ')'
+        | PASSWORD_SYM '(' expr ')'
           {
             Item* i1;
             if (thd->variables.old_passwords)
@@ -14249,7 +14249,7 @@ keyword_sp:
         | NUMBER_SYM               {}
         | NVARCHAR_SYM             {}
         | OFFSET_SYM               {}
-        | OLD_PASSWORD             {}
+        | OLD_PASSWORD_SYM         {}
         | ONE_SYM                  {}
         | ONLINE_SYM               {}
         | ONLY_SYM                 {}
@@ -14258,7 +14258,7 @@ keyword_sp:
         | PARTIAL                  {}
         | PARTITIONING_SYM         {}
         | PARTITIONS_SYM           {}
-        | PASSWORD                 {}
+        | PASSWORD_SYM             {}
         | PERSISTENT_SYM           {}
         | PHASE_SYM                {}
         | PLUGIN_SYM               {}
@@ -14684,7 +14684,7 @@ option_value_no_option_type:
               MYSQL_YYABORT;
             lex->var_list.push_back(var);
           }
-        | PASSWORD equal text_or_password
+        | PASSWORD_SYM equal text_or_password
           {
             LEX *lex= thd->lex;
             LEX_USER *user;
@@ -14709,7 +14709,7 @@ option_value_no_option_type:
             if (lex->sphead)
               lex->sphead->m_flags|= sp_head::HAS_SET_AUTOCOMMIT_STMT;
           }
-        | PASSWORD FOR_SYM user equal text_or_password
+        | PASSWORD_SYM FOR_SYM user equal text_or_password
           {
             set_var_password *var= new set_var_password($3,$5);
             if (var == NULL)
@@ -14860,7 +14860,7 @@ isolation_types:
 
 text_or_password:
           TEXT_STRING { $$=$1.str;}
-        | PASSWORD '(' TEXT_STRING ')'
+        | PASSWORD_SYM '(' TEXT_STRING ')'
           {
             $$= $3.length ? thd->variables.old_passwords ?
               Item_func_old_password::alloc(thd, $3.str, $3.length) :
@@ -14869,7 +14869,7 @@ text_or_password:
             if ($$ == NULL)
               MYSQL_YYABORT;
           }
-        | OLD_PASSWORD '(' TEXT_STRING ')'
+        | OLD_PASSWORD_SYM '(' TEXT_STRING ')'
           {
             $$= $3.length ? Item_func_old_password::
               alloc(thd, $3.str, $3.length) :
@@ -15454,7 +15454,7 @@ grant_user:
             if (Lex->sql_command == SQLCOM_REVOKE)
               MYSQL_YYABORT;
           }
-        | user IDENTIFIED_SYM BY PASSWORD TEXT_STRING
+        | user IDENTIFIED_SYM BY PASSWORD_SYM TEXT_STRING
           { 
             $$= $1; 
             $1->auth= $5;
