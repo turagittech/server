@@ -11423,7 +11423,7 @@ limit_option:
         }
         | param_marker
         {
-          ((Item_param *) $1)->limit_clause_param= TRUE;
+          $1->limit_clause_param= TRUE;
         }
         | ULONGLONG_NUM
           {
@@ -11613,10 +11613,6 @@ select_outvar:
           '@' ident_or_text
           {
             $$ = Lex->result ? new my_var_user($2) : NULL;
-          }
-        | param_marker
-          {
-            $$ = Lex->result ? new my_var_param($1) : NULL;
           }
         | ident_or_text
           {
