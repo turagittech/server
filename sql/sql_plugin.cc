@@ -3846,7 +3846,7 @@ static int test_plugin_options(MEM_ROOT *tmp_root, struct st_plugin_int *tmp,
                       &tmp->mem_root : &plugin_vars_mem_root;
   st_mysql_sys_var **opt;
   my_option *opts= NULL;
-  int error;
+  int error= 1;
   struct st_bookmark *var;
   uint len=0, count= EXTRA_OPTIONS;
   st_ptr_backup *tmp_backup= 0;
@@ -3949,8 +3949,6 @@ static int test_plugin_options(MEM_ROOT *tmp_root, struct st_plugin_int *tmp,
 
   disable_plugin= (plugin_load_option == PLUGIN_OFF);
   tmp->load_option= plugin_load_option;
-
-  error= 1;
 
   /*
     If the plugin is disabled it should not be initialized.
